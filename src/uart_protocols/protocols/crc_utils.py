@@ -6,6 +6,10 @@ Algoritmo:
     - Valor inicial: 0xFFFF
     - Byte order no frame: little-endian [CRC_LO, CRC_HI]
 
+Escopo do cálculo (frame TX):
+    [ADDR][FUNC][SUBCODE][PAYLOAD][MATRICULA_6B]  ← CRC calculado sobre TUDO isso
+    [CRC_LO][CRC_HI]                              ← appended ao final
+
 Referência:
     MODBUS over Serial Line — Specification and Implementation Guide V1.02
     Seção 6.2.2 — CRC Generation
@@ -20,7 +24,8 @@ def calculate_crc(data: bytes) -> bytes:
     Calcula CRC-16 MODBUS sobre os bytes fornecidos.
 
     Args:
-        data: Bytes do corpo da mensagem (sem CRC).
+        data: Todos os bytes antes do CRC
+              (endereço + função + subcódigo + payload + matrícula).
 
     Returns:
         2 bytes do CRC em little-endian [CRC_LO, CRC_HI].
@@ -30,20 +35,18 @@ def calculate_crc(data: bytes) -> bytes:
         crc ^= byte
         for _ in range(8):
             if crc & 0x0001:
-                crc = (crc >> 1) ^ 0xA001
+                crc >>= 1
+                crc ^= 0xA001
             else:
                 crc >>= 1
-    crc_lo = crc & 0xFF
-    crc_hi = (crc >> 8) & 0xFF
-    return bytes([crc_lo, crc_hi])
+    return crc.to_bytes(2, byteorder="little")
 
 
 def validate_crc(frame: bytes) -> bool:
     """
     Valida o CRC-16 de um frame MODBUS completo.
 
-    O frame deve ter no mínimo 3 bytes (1 byte de dados + 2 de CRC).
-    Os últimos 2 bytes são tratados como [CRC_LO, CRC_HI].
+    Os últimos 2 bytes do frame são [CRC_LO, CRC_HI].
 
     Returns:
         True se o CRC calculado coincide com o recebido.
