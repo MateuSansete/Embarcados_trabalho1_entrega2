@@ -77,12 +77,12 @@ class TestMatricula(unittest.TestCase):
 # ─── 2. CRC-16 MODBUS ────────────────────────────────────────────────────────
 
 class TestCRC16(unittest.TestCase):
-    """Valida o algoritmo CRC-16 conforme uart_modbus.md §2-D."""
+    """Valida o algoritmo CRC-16 conforme crc16.c do professor (init=0)."""
 
     def test_crc_solicita_int_nossa_matricula(self):
         """
         Frame: 01 23 A1 + matrícula 062240
-        Resultado esperado verificado com implementação de referência.
+        Resultado esperado verificado com implementação de referência crc16.c.
         """
         body = bytes([0x01, 0x23, 0xA1]) + MATRICULA
         crc = calculate_crc(body)
@@ -90,15 +90,26 @@ class TestCRC16(unittest.TestCase):
         # Verificar via roundtrip
         self.assertTrue(validate_crc(body + crc))
 
+    def test_crc_matches_reference_crc16c(self):
+        """
+        Valida CRC exato contra crc16.c do professor (calcula_CRC, init=0).
+
+        Body: 01 23 A1 00 06 02 02 04 00
+        CRC esperado: 0xEFD5 → LO=0xD5, HI=0xEF
+        """
+        body = bytes([0x01, 0x23, 0xA1]) + MATRICULA
+        crc = calculate_crc(body)
+        self.assertEqual(crc, bytes([0xD5, 0xEF]))
+
     def test_crc_returns_2_bytes(self):
         self.assertEqual(len(calculate_crc(b"\x01\x23\xA1")), 2)
 
     def test_crc_is_little_endian(self):
-        """Entrega_2.md §5: [CRC_LO][CRC_HI]."""
+        """Entrega_2.md §5: [CRC_LO][CRC_HI], conforme crc16.c (init=0)."""
         body = bytes([0x01, 0x23, 0xA1]) + MATRICULA
         crc = calculate_crc(body)
-        # Recompute manually
-        val = 0xFFFF
+        # Recompute manually with init=0 (matching crc16.c)
+        val = 0x0000
         for byte in body:
             val ^= byte
             for _ in range(8):

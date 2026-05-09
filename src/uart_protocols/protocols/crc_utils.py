@@ -1,9 +1,9 @@
 """
-CRC-16 MODBUS — implementação manual.
+CRC-16 conforme referência do professor (crc16.c).
 
 Algoritmo:
     - Polinômio: 0xA001 (reflexão de 0x8005)
-    - Valor inicial: 0xFFFF
+    - Valor inicial: 0x0000  ← conforme calcula_CRC() em crc16.c
     - Byte order no frame: little-endian [CRC_LO, CRC_HI]
 
 Escopo do cálculo (frame TX):
@@ -11,8 +11,8 @@ Escopo do cálculo (frame TX):
     [CRC_LO][CRC_HI]                              ← appended ao final
 
 Referência:
-    MODBUS over Serial Line — Specification and Implementation Guide V1.02
-    Seção 6.2.2 — CRC Generation
+    exercicio-2-uart-modbus-master/crc/crc16.c — calcula_CRC()
+    O valor inicial é 0 (não 0xFFFF como no MODBUS padrão).
 
 ⚠ NÃO usa bibliotecas prontas (pymodbus, minimalmodbus).
   Implementação byte-a-byte conforme especificação da disciplina.
@@ -21,7 +21,7 @@ Referência:
 
 def calculate_crc(data: bytes) -> bytes:
     """
-    Calcula CRC-16 MODBUS sobre os bytes fornecidos.
+    Calcula CRC-16 sobre os bytes fornecidos, conforme crc16.c do professor.
 
     Args:
         data: Todos os bytes antes do CRC
@@ -30,7 +30,7 @@ def calculate_crc(data: bytes) -> bytes:
     Returns:
         2 bytes do CRC em little-endian [CRC_LO, CRC_HI].
     """
-    crc = 0xFFFF
+    crc = 0x0000
     for byte in data:
         crc ^= byte
         for _ in range(8):
