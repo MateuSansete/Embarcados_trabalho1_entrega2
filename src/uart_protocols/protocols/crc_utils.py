@@ -3,18 +3,17 @@ CRC-16 conforme referência do professor (crc16.c).
 
 Algoritmo:
     - Polinômio: 0xA001 (reflexão de 0x8005)
-    - Valor inicial: 0x0000  ← conforme calcula_CRC() em crc16.c
+    - Valor inicial: 0x0000  - conforme calcula_CRC() em crc16.c
     - Byte order no frame: little-endian [CRC_LO, CRC_HI]
 
 Escopo do cálculo (frame TX):
-    [ADDR][FUNC][SUBCODE][PAYLOAD][MATRICULA_6B]  ← CRC calculado sobre TUDO isso
-    [CRC_LO][CRC_HI]                              ← appended ao final
+    [ADDR][FUNC][SUBCODE][PAYLOAD][MATRICULA_6B]  - CRC calculado sobre TUDO isso
+    [CRC_LO][CRC_HI]                              - appended ao final
 
 Referência:
     exercicio-2-uart-modbus-master/crc/crc16.c — calcula_CRC()
     O valor inicial é 0 (não 0xFFFF como no MODBUS padrão).
 
-⚠ NÃO usa bibliotecas prontas (pymodbus, minimalmodbus).
   Implementação byte-a-byte conforme especificação da disciplina.
 """
 

@@ -1,18 +1,20 @@
-# Sistema de Controle de Semáforos — Entrega 1
+# Sistema de Controle de Semáforos e Protocolo UART — Entrega 2
 
-Este projeto implementa um sistema de controle de semáforos concorrente para Raspberry Pi, desenvolvido para a disciplina de Fundamentos de Sistemas Embarcados (2026/1). O sistema gerencia dois modelos de cruzamentos simultaneamente através de multi-threading e máquinas de estado.
+Este projeto foi desenvolvido para a disciplina de Fundamentos de Sistemas Embarcados (2026/1). Ele implementa um sistema de controle de semáforos concorrente via GPIO e um sistema de comunicação UART (Protocolo Simplificado e MODBUS RTU) para interação entre a Raspberry Pi (sistema central) e a ESP32 (sistema distribuído).
 
-## Requisitos
+## Requisitos e Dependências
 
-- **Hardware**: Raspberry Pi (pinagem BCM).
+- **Hardware**: Raspberry Pi (pinagem BCM) conectado à ESP32 via UART.
 - **Linguagem**: Python 3.10+.
-- **Bibliotecas**: `RPi.GPIO` (para interação com hardware).
+- **Bibliotecas Necessárias**: 
+  - `pyserial` (para comunicação UART)
+  - `RPi.GPIO` (para controle de hardware)
 
-## Instalação
+## Instalação (Build / Setup)
 
-1. Clone o repositório para sua Raspberry Pi.
+1. Clone o repositório para a sua Raspberry Pi.
 2. Certifique-se de ter o Python 3 e o gerenciador de pacotes `pip` instalados.
-3. Instale as dependências necessárias:
+3. Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
@@ -20,55 +22,64 @@ pip install -r requirements.txt
 
 ## Instruções de Execução
 
-O sistema deve ser executado como um módulo Python a partir da raiz do projeto.
+O projeto possui dois domínios principais que podem ser executados como módulos Python a partir da raiz do projeto:
 
-### Executar ambos os modelos (Padrão)
+### 1. Comunicação UART e MODBUS RTU (Menu CLI)
 
-Inicia o Modelo 1 (Semáforo Simples) e o Modelo 2 (Cruzamento Completo) em paralelo:
+Para executar o menu de comunicação UART (que atende à **Entrega 2**) contendo a execução dos **12 comandos** (6 comandos do protocolo Simplificado e 6 comandos do MODBUS RTU modificado), utilize:
 
 ```bash
-python3 -m src.main
+python3 -m src.uart_protocols.main
 ```
 
-### Executar modelos individualmente
+*(Nota: também pode ser invocado via `python3 -m src`, pois foi configurado como o _entry point_ padrão).*
 
-Caso deseje testar apenas um dos cruzamentos:
+### 2. Sistema de Semáforos (GPIO)
 
-- **Modelo 1 apenas**:
-  ```bash
-  python3 -m src.main --modelo 1
-  ```
+Para executar o sistema de controle de semáforos (referente à **Entrega 1**), utilize:
 
-- **Modelo 2 apenas**:
-  ```bash
-  python3 -m src.main --modelo 2
-  ```
-
-## Estrutura do Projeto
-
+```bash
+python3 -m src.traffic_system.main
 ```
+Opções:
+- Somente Modelo 1: `python3 -m src.traffic_system.main --modelo 1`
+- Somente Modelo 2: `python3 -m src.traffic_system.main --modelo 2`
+
+---
+
+## Demonstração — Entrega 2
+
+### 1. Print da Matrícula em Destaque (ThingsBoard Widget)
+Abaixo está a representação do dashboard do ThingsBoard operando e recebendo os dados em tempo real com a matrícula em destaque:
+
+> **Nota:** Substitua o link da imagem local ou remota do dashboard na linha abaixo.
+
+![Widget ThingsBoard - Matrícula](./assets/thingsboard_widget_print.png)
+
+### 2. Vídeo de Demonstração (Até 5 minutos)
+Vídeo demonstrando a execução dos 12 comandos no terminal UART e o ThingsBoard recebendo os eventos em tempo real.
+
+> **Nota:** Insira o link do seu vídeo na linha abaixo.
+
+[🔗 Clique aqui para assistir ao vídeo de demonstração](https://link-para-o-seu-video.com)
+
+---
+
+## Estrutura do Projeto (Destaques)
+
+```text
 src/
-├── __init__.py                  # Pacote raiz
-├── __main__.py                  # Entry point (python3 -m src)
-├── main.py                      # Controlador principal (threads + sinais)
-│
-├── config/                      # Sub-pacote de configuração
-│   ├── __init__.py              # Re-exporta constantes
-│   └── settings.py              # Pinos GPIO, tempos, debounce
-│
-├── hal/                         # Sub-pacote HAL (Hardware Abstraction Layer)
-│   ├── __init__.py              # Re-exporta GPIOController
-│   └── gpio_controller.py       # Abstração GPIO (leitura, escrita, callbacks)
-│
-└── models/                      # Sub-pacote de modelos de semáforo
-    ├── __init__.py              # Re-exporta modelos
-    ├── traffic_light_model1.py  # Modelo 1 — Semáforo Simples (3 LEDs)
-    └── traffic_light_model2.py  # Modelo 2 — Cruzamento Completo (3 bits)
+├── __main__.py                      # Entry point padrão (aponta para o CLI UART)
+├── common/
+│   ├── config/settings.py           # Matrícula, Pinos GPIO, Portas UART e constantes
+│   ├── exceptions/uart_exceptions.py# Exceções customizadas para erros UART/MODBUS
+│   └── hal/uart_controller.py       # Camada de abstração de hardware para UART
+├── traffic_system/                  # Controle de semáforos em threads (Entrega 1)
+│   └── main.py                      
+└── uart_protocols/                  # Lógica de comunicação UART (Entrega 2)
+    ├── main.py                      # Menu CLI interativo
+    └── protocols/
+        ├── simple_protocol.py       # Implementação do protocolo simplificado
+        ├── modbus_protocol.py       # Empacotamento/desempacotamento de frames MODBUS RTU
+        └── crc_utils.py             # Lógica de validação e geração de CRC-16
 ```
-
-## Encerramento Seguro
-
-O programa trata sinais `SIGINT` (Ctrl+C). Ao encerrar:
-1. Cada modelo desliga seus LEDs (saídas em LOW).
-2. Os event_detect dos botões são removidos.
-3. **Não** é usado `GPIO.cleanup()` — os pinos permanecem em seus modos configurados (OUTPUT LOW ou INPUT com pull-down), evitando que fiquem em estado flutuante (alta impedância).

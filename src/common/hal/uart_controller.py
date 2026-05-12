@@ -1,7 +1,7 @@
 """
 Abstração da comunicação serial UART — HAL compartilhado.
 
-⚠ Esta classe NÃO conhece comandos, protocolos ou payload.
+ Esta classe NÃO conhece comandos, protocolos ou payload.
   A lógica de protocolo fica em uart_protocols/protocols/.
 """
 
@@ -45,7 +45,7 @@ class UARTController:
         self._bytesize = bytesize
         self._serial: serial.Serial | None = None
 
-    # ─── Conexão ─────────────────────────────────────────────────────────────
+    #  Conexão 
 
     def connect(self) -> None:
         """Abre a porta serial com os parâmetros configurados."""
@@ -76,7 +76,7 @@ class UARTController:
                 log_error(f"Erro ao fechar UART: {e}")
         self._serial = None
 
-    # ─── Transmissão ─────────────────────────────────────────────────────────
+    #  Transmissão 
 
     def send_bytes(self, data: bytes) -> None:
         """Envia bytes crus pela UART e faz flush do buffer de saída."""
@@ -84,7 +84,7 @@ class UARTController:
         self._serial.write(data)
         self._serial.flush()
 
-    # ─── Recepção ────────────────────────────────────────────────────────────
+    #  Recepção 
 
     def read_exact(self, size: int) -> bytes:
         """
@@ -110,7 +110,7 @@ class UARTController:
             data += chunk
         return data
 
-    # ─── Buffer ──────────────────────────────────────────────────────────────
+    #  Buffer 
 
     def flush(self) -> None:
         """Limpa ambos os buffers (entrada e saída)."""
@@ -123,7 +123,7 @@ class UARTController:
         if self._serial and self._serial.is_open:
             self._serial.reset_input_buffer()
 
-    # ─── Propriedades ────────────────────────────────────────────────────────
+    #   Propriedades 
 
     @property
     def is_connected(self) -> bool:
@@ -133,7 +133,7 @@ class UARTController:
     def port(self) -> str:
         return self._port
 
-    # ─── Context Manager ─────────────────────────────────────────────────────
+    #  Context Manager 
 
     def __enter__(self):
         self.connect()
@@ -143,7 +143,7 @@ class UARTController:
         self.disconnect()
         return False
 
-    # ─── Internos ────────────────────────────────────────────────────────────
+    #  Internos 
 
     def _ensure_connected(self) -> None:
         if not self.is_connected:

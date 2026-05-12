@@ -60,7 +60,7 @@ def parse_string_response(size_byte: bytes, string_data: bytes) -> str:
     return string_data.decode('utf-8')
 
 
-# ─── Parsing MODBUS ──────────────────────────────────────────────────────────
+#  Parsing MODBUS 
 
 
 def is_exception_frame(func_byte: int) -> bool:

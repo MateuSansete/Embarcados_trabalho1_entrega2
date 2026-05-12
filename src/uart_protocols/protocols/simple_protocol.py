@@ -4,8 +4,8 @@ Protocolo Simplificado UART — Parte 1 da Entrega 2.
 Implementa os 6 comandos de comunicação com a ESP32:
 
     Solicitação:
-        0xA1 — request_integer()   → int32
-        0xA2 — request_float()     → float
+        0xA1 — request_integer()   - int32
+        0xA2 — request_float()     - float
         0xA3 — request_string()    → str
 
     Envio:
@@ -34,7 +34,7 @@ from src.common.exceptions import UARTTimeoutError, ProtocolError, InvalidSizeEr
 PROTOCOL_NAME = "SIMPLE"
 
 
-# ─── Retry ───────────────────────────────────────────────────────────────────
+#  Retry 
 
 
 def _execute_with_retry(func, retry_count: int = RETRY_COUNT):
@@ -113,7 +113,7 @@ def request_string(uart) -> str:
     return _execute_with_retry(_do)
 
 
-# ─── Comandos de Envio ───────────────────────────────────────────────────────
+# Comandos de Envio 
 
 
 def send_integer(uart, value: int) -> int:
