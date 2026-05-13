@@ -66,7 +66,7 @@ class ModbusFunctionCodes:
     """
     Códigos de função MODBUS.
 
-    READ/WRITE são os códigos acadêmicos da disciplina.
+    READ/WRITE são os códigos escolhidos para este trabalho.
     READ_HOLDING/WRITE_MULTIPLE são funções MODBUS padrão reservadas.
     """
     READ  = 0x23
@@ -76,7 +76,7 @@ class ModbusFunctionCodes:
 
 
 class ModbusSubCodes:
-    """Sub-códigos que definem o tipo de dado no protocolo acadêmico."""
+    """Sub-códigos que definem o tipo de dado no protocolo."""
     REQUEST_INT    = 0xA1
     REQUEST_FLOAT  = 0xA2
     REQUEST_STRING = 0xA3

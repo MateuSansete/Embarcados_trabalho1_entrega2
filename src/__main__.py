@@ -1,5 +1,5 @@
 """
-Ponto de entrada padrão — executa o CLI UART (Entrega 2).
+Ponto de entrada padrão — executa o CLI UART - Entrega 2.
 
 Uso:
     python3 -m src                            # UART CLI (padrão)
