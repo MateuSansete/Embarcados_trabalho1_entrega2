@@ -27,7 +27,7 @@ from src.common.utils.logger import log_info, log_error
 from src.common.exceptions import UARTError, ProtocolError, ModbusError
 
 
-# ─── Banner e Menu ───────────────────────────────────────────────────────────
+# Banner e Menu 
 
 BANNER = f"""\
 {'═' * 60}
@@ -58,7 +58,7 @@ MENU = """
   └─────────────────────────────────────────────────────┘"""
 
 
-# ─── Dispatcher ──────────────────────────────────────────────────────────────
+# Dispatcher 
 
 def handle_option(option: str, uart: UARTController) -> None:
     try:
@@ -102,7 +102,7 @@ def handle_option(option: str, uart: UARTController) -> None:
         print(f"\n  ✗ Valor inválido: {e}", flush=True)
 
 
-# ─── Main ────────────────────────────────────────────────────────────────────
+# Main 
 
 def main():
     print(BANNER, flush=True)

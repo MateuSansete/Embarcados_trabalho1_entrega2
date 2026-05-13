@@ -18,7 +18,7 @@ Hierarquia:
 """
 
 
-# ─── Erros de I/O Serial ────────────────────────────────────────────────────
+# Erros de I/O Serial 
 
 
 class UARTError(Exception):
@@ -36,7 +36,7 @@ class UARTTimeoutError(UARTError):
     pass
 
 
-# ─── Erros de Protocolo ─────────────────────────────────────────────────────
+# Erros de Protocolo 
 
 
 class ProtocolError(Exception):
@@ -64,7 +64,7 @@ class InvalidSizeError(ProtocolError):
     pass
 
 
-# ─── Erros MODBUS ───────────────────────────────────────────────────────────
+# Erros MODBUS 
 
 
 class ModbusError(ProtocolError):

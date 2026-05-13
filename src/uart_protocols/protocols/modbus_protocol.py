@@ -5,11 +5,9 @@ Frame TX: [ADDR][FUNC][SUBCODE][PAYLOAD][MATRICULA_6B][CRC_LO][CRC_HI]
 Frame RX: [ADDR][FUNC][SUBCODE][DADOS][CRC_LO][CRC_HI]
 Exception: [ADDR][FUNC|0x80][EXCEPTION_CODE][CRC_LO][CRC_HI]
 
-Matrícula: bytes([0, 6, 2, 2, 4, 0])  →  062240
+Matrícula: bytes([0, 6, 2, 2, 4, 0])  -  062240
 CRC-16: polinômio 0xA001, init 0xFFFF, little-endian no frame.
 
-Preparado para extensão com MODBUS RTU real (funções 0x03, 0x10)
-e múltiplos dispositivos no barramento RS485.
 """
 
 import struct
@@ -50,16 +48,14 @@ from src.common.exceptions import (
 PROTOCOL_NAME = "MODBUS"
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  Enumerações de endereços, funções e sub-códigos
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 class SlaveAddresses:
     """
     Endereços de slaves no barramento RS485.
 
-    Para comunicação ponto-a-ponto, DEFAULT (0x01) é suficiente.
+    Para comunicação ponto-a-ponto, DEFAULT (0x01).
     Preparado para múltiplos dispositivos no sistema final.
     """
     DEFAULT   = 0x01
@@ -89,9 +85,7 @@ class ModbusSubCodes:
     SEND_STRING    = 0xB3
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  Construção de frames TX
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def _build_frame(addr: int, func: int, subcode: int, payload: bytes = b"") -> bytes:
@@ -137,9 +131,8 @@ def build_modbus_send_string_frame(addr: int, func: int, subcode: int, text: str
     return _build_frame(addr, func, subcode, bytes([len(encoded)]) + encoded)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+
 #  Parsing de frames RX
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def _validate_modbus_response(frame: bytes, expected_func: int) -> None:
@@ -194,9 +187,8 @@ def _read_string_response(uart) -> bytes:
     return header + len_byte + remaining
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
+
 #  Retry
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def _execute_with_retry(
@@ -228,9 +220,7 @@ def _execute_with_retry(
     raise last_error
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  Comandos de Solicitação (0x23)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def modbus_request_integer(uart, addr: int = MODBUS_DEFAULT_SLAVE_ADDR) -> int:
@@ -306,9 +296,7 @@ def modbus_request_string(uart, addr: int = MODBUS_DEFAULT_SLAVE_ADDR) -> str:
     return _execute_with_retry(_do)
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
 #  Comandos de Envio (0x16)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 
 def modbus_send_integer(uart, value: int, addr: int = MODBUS_DEFAULT_SLAVE_ADDR) -> int:

@@ -61,7 +61,7 @@ def _execute_with_retry(func, retry_count: int = RETRY_COUNT):
     raise last_error
 
 
-# ─── Comandos de Solicitação ─────────────────────────────────────────────────
+#  Comandos de Solicitação 
 
 
 def request_integer(uart) -> int:

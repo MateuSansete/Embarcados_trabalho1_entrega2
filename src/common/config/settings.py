@@ -17,13 +17,13 @@ Seções:
 
 UART_PORT     = "/dev/serial0"
 UART_BAUDRATE = 115200
-UART_TIMEOUT  = 0.3        # 300 ms (faixa 200–500 ms)
+UART_TIMEOUT  = 0.3        # 300 ms 
 UART_PARITY   = "N"
 UART_STOPBITS = 1
 UART_BYTESIZE = 8
 
 #  2. Matrícula 
-# 6 últimos dígitos como bytes crus (0–9), NÃO como caracteres ASCII.
+# 6 últimos dígitos como bytes
 # Matrícula 062240 → bytes([0, 6, 2, 2, 4, 0])
 
 MATRICULA     = bytes([0, 6, 2, 2, 4, 0])
@@ -52,7 +52,7 @@ MODBUS_SUB_SEND_INT       = 0xB1
 MODBUS_SUB_SEND_FLOAT     = 0xB2
 MODBUS_SUB_SEND_STRING    = 0xB3
 
-#  5. Limites e Retry 
+# 5. Limites e Retry 
 
 MAX_STRING_LENGTH  = 255
 RETRY_COUNT        = 3
